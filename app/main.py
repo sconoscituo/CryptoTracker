@@ -16,11 +16,19 @@ async def check_price_alerts():
     """5분마다 가격 알림 조건 체크 (스케줄러 작업)"""
     from app.services.price_fetcher import price_fetcher
     from app.services.notifier import notifier
+    from app.services.price_alert import price_alert_service
 
     async with AsyncSessionLocal() as db:
+        # 기존 notifier (python-telegram-bot 기반)
         count = await notifier.check_and_notify_alerts(db, price_fetcher)
         if count > 0:
             print(f"[알림] {count}개의 가격 알림을 발송했습니다.")
+
+    # PriceAlertService (httpx 직접 호출, USD/KRW 병행 표시)
+    async with AsyncSessionLocal() as db:
+        count2 = await price_alert_service.check_alerts(db)
+        if count2 > 0:
+            print(f"[PriceAlertService] {count2}개의 알림을 추가 발송했습니다.")
 
 
 @asynccontextmanager
