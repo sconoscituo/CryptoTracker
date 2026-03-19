@@ -5,6 +5,7 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from app.config import settings
 from app.database import init_db, AsyncSessionLocal
 from app.routers import portfolio, alerts, users
+from app.middleware.security_headers import SecurityHeadersMiddleware
 
 
 # APScheduler - 주기적 가격 알림 체크
@@ -53,6 +54,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(SecurityHeadersMiddleware)
 
 # 라우터 등록
 app.include_router(users.router)
